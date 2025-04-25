@@ -193,6 +193,10 @@ import scala.concurrent.duration._
   *        tight loop. This backoff applies to all requests sent by the
   *        consumer to the broker.
   *
+  * @param reconnectBackoffMaxTime is the `reconnect.backoff.max.ms` setting.
+  *        The maximum amount of time to wait when reconnecting to a broker
+  *        that has repeatedly failed to connect.
+  *
   * @param retryBackoffTime is the `retry.backoff.ms` setting.
   *        The amount of time to wait before attempting to retry a failed
   *        request to a given topic partition. This avoids repeatedly
@@ -251,6 +255,7 @@ case class KafkaConsumerConfig(
   metricsNumSamples: Int,
   metricsSampleWindow: FiniteDuration,
   reconnectBackoffTime: FiniteDuration,
+  reconnectBackoffMaxTime: FiniteDuration,
   retryBackoffTime: FiniteDuration,
   observableCommitType: ObservableCommitType,
   observableCommitOrder: ObservableCommitOrder,
@@ -296,6 +301,7 @@ case class KafkaConsumerConfig(
     "metrics.num.samples" -> metricsNumSamples.toString,
     "metrics.sample.window.ms" -> metricsSampleWindow.toMillis.toString,
     "reconnect.backoff.ms" -> reconnectBackoffTime.toMillis.toString,
+    "reconnect.backoff.max.ms" -> reconnectBackoffMaxTime.toMillis.toString,
     "retry.backoff.ms" -> retryBackoffTime.toMillis.toString
   )
 
@@ -448,6 +454,7 @@ object KafkaConsumerConfig {
       metricsNumSamples = config.getInt("metrics.num.samples"),
       metricsSampleWindow = config.getInt("metrics.sample.window.ms").millis,
       reconnectBackoffTime = config.getInt("reconnect.backoff.ms").millis,
+      reconnectBackoffMaxTime = config.getInt("reconnect.backoff.max.ms").millis,
       retryBackoffTime = config.getInt("retry.backoff.ms").millis,
       observableCommitType = ObservableCommitType(config.getString("monix.observable.commit.type")),
       observableCommitOrder = ObservableCommitOrder(config.getString("monix.observable.commit.order")),
