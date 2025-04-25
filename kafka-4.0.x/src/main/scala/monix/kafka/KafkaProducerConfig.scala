@@ -158,6 +158,10 @@ import scala.concurrent.duration._
   *        tight loop. This backoff applies to all requests sent by the
   *        consumer to the broker.
   *
+  * @param reconnectBackoffMaxTime is the `reconnect.backoff.max.ms` setting.
+  *        The maximum amount of time to wait when reconnecting to a broker
+  *        that has repeatedly failed to connect.
+  *
   * @param retryBackoffTime is the `retry.backoff.ms` setting.
   *        The amount of time to wait before attempting to retry a failed
   *        request to a given topic partition. This avoids repeatedly
@@ -225,6 +229,7 @@ final case class KafkaProducerConfig(
   sslProvider: Option[String],
   sslTruststoreType: String,
   reconnectBackoffTime: FiniteDuration,
+  reconnectBackoffMaxTime: FiniteDuration,
   retryBackoffTime: FiniteDuration,
   metadataMaxAge: FiniteDuration,
   metricReporters: List[String],
@@ -264,6 +269,7 @@ final case class KafkaProducerConfig(
     "ssl.provider" -> sslProvider.orNull,
     "ssl.truststore.type" -> sslTruststoreType,
     "reconnect.backoff.ms" -> reconnectBackoffTime.toMillis.toString,
+    "reconnect.backoff.max.ms" -> reconnectBackoffMaxTime.toMillis.toString,
     "retry.backoff.ms" -> retryBackoffTime.toMillis.toString,
     "metadata.max.age.ms" -> metadataMaxAge.toMillis.toString,
     "metric.reporters" -> metricReporters.mkString(","),
@@ -404,6 +410,7 @@ object KafkaProducerConfig {
       sslProvider = getOptString("ssl.provider"),
       sslTruststoreType = config.getString("ssl.truststore.type"),
       reconnectBackoffTime = config.getInt("reconnect.backoff.ms").millis,
+      reconnectBackoffMaxTime = config.getInt("reconnect.backoff.max.ms").millis,
       retryBackoffTime = config.getInt("retry.backoff.ms").millis,
       metadataMaxAge = config.getInt("metadata.max.age.ms").millis,
       metricReporters = config.getString("metric.reporters").trim.split("\\s*,\\s*").toList,
