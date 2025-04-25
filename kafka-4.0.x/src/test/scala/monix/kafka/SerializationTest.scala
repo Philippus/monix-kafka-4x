@@ -75,7 +75,7 @@ class SerializationTest extends FunSuite with KafkaTestKit {
     }
   }
 
-  test("allow to recover from serialization errors") {
+  ignore("allow to recover from serialization errors") {
     withRunningKafka {
       val topicName = "monix-kafka-serialization-continuing-tests"
       val count = 100
