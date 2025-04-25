@@ -48,18 +48,6 @@ lazy val sharedSettings = warnUnusedImport ++ Seq(
     "-language:existentials"
   ),
 
-  scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, majorVersion)) if majorVersion <= 12 =>
-      Seq(
-        "-Xlint:inaccessible", // warn about inaccessible types in method signatures
-        "-Xlint:by-name-right-associative", // By-name parameter of right associative operator
-        "-Xlint:unsound-match", // Pattern match may not be typesafe
-        "-Xlint:nullary-override", // warn when non-nullary `def f()' overrides nullary `def f'
-      )
-    case _ =>
-      Seq.empty
-  }),
-
   // Linter
   scalacOptions ++= Seq(
     // Turns all warnings into errors ;-)
