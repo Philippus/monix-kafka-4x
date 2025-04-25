@@ -48,18 +48,6 @@ lazy val sharedSettings = warnUnusedImport ++ Seq(
     "-language:existentials"
   ),
 
-  scalacOptions ++= (CrossVersion.partialVersion(scalaVersion.value) match {
-    case Some((2, majorVersion)) if majorVersion <= 12 =>
-      Seq(
-        "-Xlint:inaccessible", // warn about inaccessible types in method signatures
-        "-Xlint:by-name-right-associative", // By-name parameter of right associative operator
-        "-Xlint:unsound-match", // Pattern match may not be typesafe
-        "-Xlint:nullary-override", // warn when non-nullary `def f()' overrides nullary `def f'
-      )
-    case _ =>
-      Seq.empty
-  }),
-
   // Linter
   scalacOptions ++= Seq(
     // Turns all warnings into errors ;-)
@@ -67,7 +55,6 @@ lazy val sharedSettings = warnUnusedImport ++ Seq(
     // Enables linter options
     "-Xlint:adapted-args", // warn if an argument list is modified to match the receiver
     "-Xlint:nullary-unit", // warn when nullary methods return Unit
-    "-Xlint:nullary-override", // warn when non-nullary `def f()' overrides nullary `def f'
     "-Xlint:infer-any", // warn when a type argument is inferred to be `Any`
     "-Xlint:missing-interpolator", // a string literal appears to be missing an interpolator id
     "-Xlint:doc-detached", // a ScalaDoc comment appears to be detached from its element
@@ -133,9 +120,8 @@ def mimaSettings(projectName: String) = Seq(
 
 lazy val commonDependencies = Seq(
   resolvers ++= Seq(
-    "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases",
-    Resolver.sonatypeRepo("releases")
-  ),
+    "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases"
+  ) ++ Resolver.sonatypeOssRepos("releases"),
 
   libraryDependencies ++= Seq(
     "io.monix" %% "monix-reactive" % monixVersion,
