@@ -133,9 +133,8 @@ def mimaSettings(projectName: String) = Seq(
 
 lazy val commonDependencies = Seq(
   resolvers ++= Seq(
-    "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases",
-    Resolver.sonatypeRepo("releases")
-  ),
+    "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases"
+  ) ++ Resolver.sonatypeOssRepos("releases"),
 
   libraryDependencies ++= Seq(
     "io.monix" %% "monix-reactive" % monixVersion,
