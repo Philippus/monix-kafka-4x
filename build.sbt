@@ -17,7 +17,7 @@ inThisBuild(List(
     )),
 ))
 
-val monixVersion = "3.4.0"
+val monixVersion = "3.4.1"
 
 lazy val doNotPublishArtifact = Seq(
   publishArtifact := false,
@@ -125,18 +125,18 @@ lazy val commonDependencies = Seq(
 
   libraryDependencies ++= Seq(
     "io.monix" %% "monix-reactive" % monixVersion,
-    "com.typesafe.scala-logging" %% "scala-logging" % "3.9.4",
-    "com.typesafe" % "config" % "1.4.2",
-    "org.slf4j" % "log4j-over-slf4j" % "1.7.36",
-    "org.scala-lang.modules" %% "scala-collection-compat" % "2.7.0" % "provided;optional",
+    "com.typesafe.scala-logging" %% "scala-logging" % "3.9.5",
+    "com.typesafe" % "config" % "1.4.3",
+    "org.slf4j" % "log4j-over-slf4j" % "2.0.17",
     // For testing ...
-    "ch.qos.logback" % "logback-classic" % "1.2.11" % "test",
-    "org.scalatest" %% "scalatest" % "3.0.9" % "test",
-    "org.scalacheck" %% "scalacheck" % "1.15.2" % "test",
+    "ch.qos.logback" % "logback-classic" % "1.5.18" % Test,
+    "org.scalatest" %% "scalatest" % "3.2.19" % Test,
+    "org.scalatestplus" %% "scalacheck-1-18" % "3.2.19.0" % Test,
+    "org.scalacheck" %% "scalacheck" % "1.18.1" % Test,
     "io.github.embeddedkafka" %% "embedded-kafka" % "4.0.1" % Test)
 )
 
-ThisBuild / scalaVersion := "2.13.15"
+ThisBuild / scalaVersion := "2.13.16"
 
 lazy val monixKafka = project.in(file("."))
   .settings(sharedSettings)

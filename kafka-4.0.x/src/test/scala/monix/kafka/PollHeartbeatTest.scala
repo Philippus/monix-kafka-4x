@@ -7,12 +7,12 @@ import org.apache.kafka.clients.producer.ProducerRecord
 import org.apache.kafka.common.TopicPartition
 import monix.execution.Scheduler.Implicits.global
 import org.scalactic.source
-import org.scalatest.FunSuite
+import org.scalatest.funsuite.AnyFunSuite
 import org.scalatest.concurrent.ScalaFutures
 
 import scala.concurrent.duration._
 
-class PollHeartbeatTest extends FunSuite with KafkaTestKit with ScalaFutures {
+class PollHeartbeatTest extends AnyFunSuite with KafkaTestKit with ScalaFutures {
 
   val topicName = "monix-kafka-tests"
 
