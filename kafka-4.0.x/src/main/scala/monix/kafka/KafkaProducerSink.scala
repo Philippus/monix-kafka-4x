@@ -28,31 +28,32 @@ import org.apache.kafka.clients.producer.{ProducerRecord, RecordMetadata}
 import scala.concurrent.Future
 import scala.util.{Failure, Success}
 
-/** A `monix.reactive.Consumer` that pushes incoming messages into
-  * a [[KafkaProducer]].
+/** A `monix.reactive.Consumer` that pushes incoming messages into a [[KafkaProducer]].
   *
-  * You can customize behavior in case of an errors when sending messages to Kafka
-  * with `onSendError`. The `Task` should return one of:
-  * - `Continue` to ignore the errors and try again with the next batch
-  * - `Stop` to stop the stream gracefully which will also commit latest batch if using [[KafkaConsumerObservableAutoCommit]]
-  * - An error with `Task.raiseError` which will finish the stream with an error.
+  * You can customize behavior in case of an errors when sending messages to Kafka with `onSendError`. The `Task` should
+  * return one of:
+  *   - `Continue` to ignore the errors and try again with the next batch
+  *   - `Stop` to stop the stream gracefully which will also commit latest batch if using
+  *     [[KafkaConsumerObservableAutoCommit]]
+  *   - An error with `Task.raiseError` which will finish the stream with an error.
   */
 final class KafkaProducerSink[K, V] private (
-  producer: Coeval[KafkaProducer[K, V]],
-  shouldTerminate: Boolean,
-  parallelism: Int,
-  onSendError: Throwable => Task[Ack])
-    extends Consumer[Seq[ProducerRecord[K, V]], Unit] with StrictLogging with Serializable {
+    producer: Coeval[KafkaProducer[K, V]],
+    shouldTerminate: Boolean,
+    parallelism: Int,
+    onSendError: Throwable => Task[Ack]
+) extends Consumer[Seq[ProducerRecord[K, V]], Unit] with StrictLogging with Serializable {
 
   require(parallelism >= 1, "parallelism >= 1")
 
   def createSubscriber(
-    cb: Callback[Throwable, Unit],
-    s: Scheduler): (Subscriber[Seq[ProducerRecord[K, V]]], AssignableCancelable.Multi) = {
+      cb: Callback[Throwable, Unit],
+      s: Scheduler
+  ): (Subscriber[Seq[ProducerRecord[K, V]]], AssignableCancelable.Multi) = {
     val out = new Subscriber[Seq[ProducerRecord[K, V]]] { self =>
       implicit val scheduler: Scheduler = s
-      private[this] val p = producer.memoize
-      private[this] var isActive = true
+      private[this] val p               = producer.memoize
+      private[this] var isActive        = true
 
       def onNext(list: Seq[ProducerRecord[K, V]]): Future[Ack] =
         self.synchronized {
@@ -82,7 +83,7 @@ final class KafkaProducerSink[K, V] private (
             if (!shouldTerminate) cb
             else
               Task(p.value().close()).flatten.materialize.foreach {
-                case Success(_) => cb
+                case Success(_)  => cb
                 case Failure(ex) =>
                   logger.error("Unexpected error in KafkaProducerSink", ex)
                   cb
@@ -92,7 +93,7 @@ final class KafkaProducerSink[K, V] private (
 
       def onError(ex: Throwable): Unit =
         terminate(cb.onError(ex))
-      def onComplete(): Unit =
+      def onComplete(): Unit           =
         terminate(cb.onSuccess(()))
     }
 
@@ -110,13 +111,15 @@ object KafkaProducerSink extends StrictLogging {
 
   /** Builder for [[KafkaProducerSink]]. */
   def apply[K, V](config: KafkaProducerConfig, sc: Scheduler)(implicit
-    K: Serializer[K],
-    V: Serializer[V]): KafkaProducerSink[K, V] = apply(config, sc, onSendErrorDefault)
+      K: Serializer[K],
+      V: Serializer[V]
+  ): KafkaProducerSink[K, V] = apply(config, sc, onSendErrorDefault)
 
   /** Builder for [[KafkaProducerSink]]. */
   def apply[K, V](config: KafkaProducerConfig, sc: Scheduler, onSendError: Throwable => Task[Ack])(implicit
-    K: Serializer[K],
-    V: Serializer[V]): KafkaProducerSink[K, V] = {
+      K: Serializer[K],
+      V: Serializer[V]
+  ): KafkaProducerSink[K, V] = {
 
     val producer = Coeval(KafkaProducer[K, V](config, sc))
     new KafkaProducerSink(producer, shouldTerminate = true, parallelism = config.monixSinkParallelism, onSendError)
@@ -128,8 +131,9 @@ object KafkaProducerSink extends StrictLogging {
 
   /** Builder for [[KafkaProducerSink]]. */
   def apply[K, V](
-    producer: Coeval[KafkaProducer[K, V]],
-    parallelism: Int,
-    onSendError: Throwable => Task[Ack]): KafkaProducerSink[K, V] =
+      producer: Coeval[KafkaProducer[K, V]],
+      parallelism: Int,
+      onSendError: Throwable => Task[Ack]
+  ): KafkaProducerSink[K, V] =
     new KafkaProducerSink(producer, shouldTerminate = false, parallelism = parallelism, onSendError)
 }

@@ -19,20 +19,20 @@ package monix.kafka
 import monix.eval.Task
 import org.apache.kafka.common.TopicPartition
 
-/** Batch of Kafka offsets which can be committed together.
-  * Can be built from offsets sequence by [[CommittableOffsetBatch#apply]] method.
-  * You can also use [[CommittableOffsetBatch#empty]] method to create empty batch and
-  * add offsets to it using [[updated]] method.
+/** Batch of Kafka offsets which can be committed together. Can be built from offsets sequence by
+  * [[CommittableOffsetBatch#apply]] method. You can also use [[CommittableOffsetBatch#empty]] method to create empty
+  * batch and add offsets to it using [[updated]] method.
   *
-  * WARNING: Order of the offsets is important. Only the last added offset
-  * for topic and partition will be committed to Kafka.
+  * WARNING: Order of the offsets is important. Only the last added offset for topic and partition will be committed to
+  * Kafka.
   *
-  * @param offsets is the offsets batch for a provided topics and partitions.
-  *        Make sure that each of them was received from one [[KafkaConsumerObservable]].
+  * @param offsets
+  *   is the offsets batch for a provided topics and partitions. Make sure that each of them was received from one
+  *   [[KafkaConsumerObservable]].
   *
-  * @param commitCallback is the set of callbacks for batched commit realized as closure
-  *        in [[KafkaConsumerObservable]] context. This parameter is obtained from the last [[CommittableOffset]]
-  *        added to batch.
+  * @param commitCallback
+  *   is the set of callbacks for batched commit realized as closure in [[KafkaConsumerObservable]] context. This
+  *   parameter is obtained from the last [[CommittableOffset]] added to batch.
   */
 final class CommittableOffsetBatch private[kafka] (val offsets: Map[TopicPartition, Long], commitCallback: Commit) {
 
@@ -44,8 +44,8 @@ final class CommittableOffsetBatch private[kafka] (val offsets: Map[TopicPartiti
     */
   def commitAsync(): Task[Unit] = commitCallback.commitBatchAsync(offsets)
 
-  /** Adds new [[CommittableOffset]] to batch. Added offset replaces previous one specified
-    * for same topic and partition.
+  /** Adds new [[CommittableOffset]] to batch. Added offset replaces previous one specified for same topic and
+    * partition.
     */
   def updated(committableOffset: CommittableOffset): CommittableOffsetBatch =
     new CommittableOffsetBatch(
@@ -63,9 +63,8 @@ object CommittableOffsetBatch {
     */
   val empty: CommittableOffsetBatch = new CommittableOffsetBatch(Map.empty, Commit.empty)
 
-  /** Builds [[CommittableOffsetBatch]] from offsets sequence. Be careful with
-    * sequence order. If there is more than once offset for a topic and partition in the
-    * sequence then the last one will remain.
+  /** Builds [[CommittableOffsetBatch]] from offsets sequence. Be careful with sequence order. If there is more than
+    * once offset for a topic and partition in the sequence then the last one will remain.
     */
   def apply(offsets: Seq[CommittableOffset]): CommittableOffsetBatch =
     if (offsets.nonEmpty) {
@@ -77,9 +76,8 @@ object CommittableOffsetBatch {
       empty
     }
 
-  /** Builds [[CommittableOffsetBatch]] list from offsets sequence by merging the offsets
-    * that have the same commit callback. This will help when the committable offsets are
-    * from different consumers.
+  /** Builds [[CommittableOffsetBatch]] list from offsets sequence by merging the offsets that have the same commit
+    * callback. This will help when the committable offsets are from different consumers.
     * {{{
     *   CommittableOffsetBatch.mergeByCommitCallback(offsets)
     * }}}

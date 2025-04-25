@@ -51,7 +51,7 @@ class MonixKafkaTopicListTest extends AnyFunSuite with KafkaTestKit {
 
       val consumerTask =
         KafkaConsumerObservable.createConsumer[String, String](consumerCfg, List(topicName)).executeOn(io)
-      val consumer = Await.result(consumerTask.runToFuture, 60.seconds)
+      val consumer     = Await.result(consumerTask.runToFuture, 60.seconds)
 
       try {
         // Publishing one message
@@ -76,7 +76,7 @@ class MonixKafkaTopicListTest extends AnyFunSuite with KafkaTestKit {
         val send = producer.send(topicName, "test-message")
         Await.result(send.runToFuture, 30.seconds)
 
-        val first = consumer.take(1).map(_.value()).firstL
+        val first  = consumer.take(1).map(_.value()).firstL
         val result = Await.result(first.runToFuture, 30.seconds)
         assert(result === "test-message")
       } finally {
@@ -110,7 +110,7 @@ class MonixKafkaTopicListTest extends AnyFunSuite with KafkaTestKit {
   test("manual commit consumer test when subscribed to topics list") {
     withRunningKafka {
 
-      val count = 10000
+      val count     = 10000
       val topicName = "monix-kafka-manual-commit-tests"
 
       val producer = KafkaProducerSink[String, String](producerCfg, io)
@@ -143,11 +143,11 @@ class MonixKafkaTopicListTest extends AnyFunSuite with KafkaTestKit {
       val sendTask = producer.send(topicName, "test-message")
 
       val result = for {
-        //Force creation of producer
-        s1 <- producer.send(topicName, "test-message-1")
-        res <- Task.parZip2(producer.close(), Task.parSequence(List.fill(10)(sendTask)).attempt)
+        // Force creation of producer
+        s1     <- producer.send(topicName, "test-message-1")
+        res    <- Task.parZip2(producer.close(), Task.parSequence(List.fill(10)(sendTask)).attempt)
         (_, s2) = res
-        s3 <- sendTask
+        s3     <- sendTask
       } yield (s1, s2, s3)
 
       val (first, second, third) = Await.result(result.runToFuture, 60.seconds)

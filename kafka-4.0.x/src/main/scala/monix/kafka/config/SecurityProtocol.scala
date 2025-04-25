@@ -24,10 +24,10 @@ import com.typesafe.config.ConfigException.BadValue
   *
   * Valid values are:
   *
-  *  - [[SecurityProtocol.PLAINTEXT]]
-  *  - [[SecurityProtocol.SSL]]
-  *  - [[SecurityProtocol.SASL_PLAINTEXT]]
-  *  - [[SecurityProtocol.SASL_SSL]]
+  *   - [[SecurityProtocol.PLAINTEXT]]
+  *   - [[SecurityProtocol.SSL]]
+  *   - [[SecurityProtocol.SASL_PLAINTEXT]]
+  *   - [[SecurityProtocol.SASL_SSL]]
   */
 sealed trait SecurityProtocol extends Serializable {
   def id: String
@@ -38,11 +38,11 @@ object SecurityProtocol {
   @throws(classOf[BadValue])
   def apply(id: String): SecurityProtocol =
     id match {
-      case PLAINTEXT.id => PLAINTEXT
-      case SSL.id => SSL
+      case PLAINTEXT.id      => PLAINTEXT
+      case SSL.id            => SSL
       case SASL_PLAINTEXT.id => SASL_PLAINTEXT
-      case SASL_SSL.id => SASL_SSL
-      case _ =>
+      case SASL_SSL.id       => SASL_SSL
+      case _                 =>
         throw new BadValue("kafka.security.protocol", s"Invalid value: $id")
     }
 

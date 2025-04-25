@@ -33,9 +33,9 @@ import scala.util.{Failure, Success}
 /** KafkaConsumerObservable implementation which commits offsets itself.
   */
 final class KafkaConsumerObservableAutoCommit[K, V] private[kafka] (
-  override protected val config: KafkaConsumerConfig,
-  override protected val consumerT: Task[Consumer[K, V]])
-    extends KafkaConsumerObservable[K, V, ConsumerRecord[K, V]] {
+    override protected val config: KafkaConsumerConfig,
+    override protected val consumerT: Task[Consumer[K, V]]
+) extends KafkaConsumerObservable[K, V, ConsumerRecord[K, V]] {
 
   /* Based on the [[KafkaConsumerConfig.observableCommitType]] it
    * chooses to commit the offsets in the consumer, by doing either
@@ -45,42 +45,43 @@ final class KafkaConsumerObservableAutoCommit[K, V] private[kafka] (
    */
   private def consumerCommit(consumer: Consumer[K, V]): Unit =
     config.observableCommitType match {
-      case ObservableCommitType.Sync =>
+      case ObservableCommitType.Sync  =>
         blocking(consumer.commitSync())
       case ObservableCommitType.Async =>
         blocking(consumer.commitAsync())
     }
 
   // Caching value to save CPU cycles
-  private val pollTimeoutMillis = config.fetchMaxWaitTime.toMillis
+  private val pollTimeoutMillis  = config.fetchMaxWaitTime.toMillis
   // Boolean value indicating that we should trigger a commit before downstream ack
   private val shouldCommitBefore = !config.enableAutoCommit && config.observableCommitOrder.isBefore
   // Boolean value indicating that we should trigger a commit after downstream ack
-  private val shouldCommitAfter = !config.enableAutoCommit && config.observableCommitOrder.isAfter
+  private val shouldCommitAfter  = !config.enableAutoCommit && config.observableCommitOrder.isAfter
 
   override protected def ackTask(consumer: Consumer[K, V], out: Subscriber[ConsumerRecord[K, V]]): Task[Ack] =
     Task.create { (scheduler, cb) =>
       implicit val s = scheduler
-      val asyncCb = Callback.forked(cb)
+      val asyncCb    = Callback.forked(cb)
       val cancelable = BooleanCancelable()
 
       // Forced asynchronous boundary (on the I/O scheduler)
       s.execute { () =>
         val ackFuture =
           try consumer.synchronized {
-            val assignment = consumer.assignment()
-            if (cancelable.isCanceled) Stop
-            else {
-              consumer.resume(assignment)
-              val next = blocking(consumer.poll(java.time.Duration.ofMillis(pollTimeoutMillis)))
-              consumer.pause(assignment)
-              if (shouldCommitBefore) consumerCommit(consumer)
-              // Feeding the observer happens on the Subscriber's scheduler
-              // if any asynchronous boundaries happen
-              isAcked = false
-              Observer.feed(out, next.asScala)(out.scheduler)
+              val assignment = consumer.assignment()
+              if (cancelable.isCanceled) Stop
+              else {
+                consumer.resume(assignment)
+                val next = blocking(consumer.poll(java.time.Duration.ofMillis(pollTimeoutMillis)))
+                consumer.pause(assignment)
+                if (shouldCommitBefore) consumerCommit(consumer)
+                // Feeding the observer happens on the Subscriber's scheduler
+                // if any asynchronous boundaries happen
+                isAcked = false
+                Observer.feed(out, next.asScala)(out.scheduler)
+              }
             }
-          } catch {
+          catch {
             case NonFatal(ex) =>
               Future.failed(ex)
           }
@@ -94,17 +95,18 @@ final class KafkaConsumerObservableAutoCommit[K, V] private[kafka] (
             // scheduler implementation.
             var streamErrors = true
             try consumer.synchronized {
-              // In case the task has been cancelled, there's no point
-              // in continuing to do anything else
-              if (cancelable.isCanceled) {
-                streamErrors = false
-                asyncCb.onSuccess(Stop)
-              } else {
-                if (shouldCommitAfter) consumerCommit(consumer)
-                streamErrors = false
-                asyncCb.onSuccess(ack)
+                // In case the task has been cancelled, there's no point
+                // in continuing to do anything else
+                if (cancelable.isCanceled) {
+                  streamErrors = false
+                  asyncCb.onSuccess(Stop)
+                } else {
+                  if (shouldCommitAfter) consumerCommit(consumer)
+                  streamErrors = false
+                  asyncCb.onSuccess(ack)
+                }
               }
-            } catch {
+            catch {
               case NonFatal(ex) =>
                 if (streamErrors) asyncCb.onError(ex)
                 else s.reportFailure(ex)

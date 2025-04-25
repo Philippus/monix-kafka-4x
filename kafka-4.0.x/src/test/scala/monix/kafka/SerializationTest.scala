@@ -32,9 +32,9 @@ class SerializationTest extends AnyFunSuite with KafkaTestKit {
   test("serialization/deserialization using kafka.common.serialization") {
     withRunningKafka {
       val topicName = "monix-kafka-serialization-tests"
-      val count = 10000
+      val count     = 10000
 
-      implicit val serializer: KafkaSerializer[A] = new ASerializer
+      implicit val serializer: KafkaSerializer[A]     = new ASerializer
       implicit val deserializer: KafkaDeserializer[A] = new ADeserializer
 
       val producer = KafkaProducerSink[String, A](producerCfg, io)
@@ -58,7 +58,7 @@ class SerializationTest extends AnyFunSuite with KafkaTestKit {
   test("allow to fail the stream if serialization throws") {
     withRunningKafka {
       val topicName = "monix-kafka-serialization-failing-tests"
-      val dummy = DummyException("boom")
+      val dummy     = DummyException("boom")
 
       implicit val serializer: KafkaSerializer[A] = new AFailingSerializer
 
@@ -78,9 +78,9 @@ class SerializationTest extends AnyFunSuite with KafkaTestKit {
   ignore("allow to recover from serialization errors") {
     withRunningKafka {
       val topicName = "monix-kafka-serialization-continuing-tests"
-      val count = 100
+      val count     = 100
 
-      implicit val serializer: KafkaSerializer[A] = new AHalfFailingSerializer
+      implicit val serializer: KafkaSerializer[A]     = new AHalfFailingSerializer
       implicit val deserializer: KafkaDeserializer[A] = new ADeserializer
 
       val producer = KafkaProducerSink[String, A](producerCfg, io)
