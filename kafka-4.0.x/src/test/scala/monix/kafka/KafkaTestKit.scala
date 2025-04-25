@@ -1,7 +1,7 @@
 package monix.kafka
 
-import net.manub.embeddedkafka.EmbeddedKafka
 import org.scalatest.Suite
+import _root_.io.github.embeddedkafka.EmbeddedKafka
 
 trait KafkaTestKit extends EmbeddedKafka { self: Suite =>
 

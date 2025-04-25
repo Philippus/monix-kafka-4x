@@ -183,7 +183,7 @@ class PollHeartbeatTest extends FunSuite with KafkaTestKit with ScalaFutures {
 
       val t = Task.parZip2(listT.executeAsync, pushT.executeAsync).map(_._1)
       whenReady(t.runToFuture.failed) { ex =>
-        assert(ex.getMessage.contains("the group has already rebalanced and assigned the partitions to another member"))
+        assert(ex.getMessage.contains("the consumer is not part of an active group for auto partition assignment"))
       }
 
     }
@@ -228,7 +228,7 @@ class PollHeartbeatTest extends FunSuite with KafkaTestKit with ScalaFutures {
 
       val t = Task.parZip2(listT.executeAsync, pushT.executeAsync).map(_._1)
       whenReady(t.runToFuture.failed) { ex =>
-        assert(ex.getMessage.contains("the group has already rebalanced and assigned the partitions to another member"))
+        assert(ex.getMessage.contains("the consumer is undergoing a rebalance for auto partition assignment"))
       }(PatienceConfig(200.seconds, 1.seconds), source.Position.here)
     }
   }
