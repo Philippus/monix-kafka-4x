@@ -1,8 +1,6 @@
-import pl.project13.scala.sbt.JmhPlugin
-
 inThisBuild(List(
-  organization := "io.monix",
-  homepage := Some(url("https://github.com/monix/monix-kafka")),
+  organization := "nl.gn0s1s",
+  homepage := Some(url("https://github.com/philippus/monix-kafka-4x")),
   licenses := List("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
   developers := List(
     Developer(
