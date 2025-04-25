@@ -6,20 +6,35 @@
 
 [![Gitter](https://badges.gitter.im/Join%20Chat.svg)](https://gitter.im/monix/monix?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-Monix integration with Kafka
+Monix integration with Kafka for kafka-clients 4.0.0 and up
 
-Work in progress!
+Only here to help in transitioning away from monix-kafka while not blocking migration to kafka-clients 4.0.0 and up!
 
 ## Table of Contents
-1. [Getting Started with Kafka 1.0.x or above](#getting-started-with-kafka-10x-or-above)
-2. [Getting Started with Kafka 0.11.x](#getting-started-with-kafka-011x)
-3. [Getting Started with Kafka 0.10.x](#getting-started-with-kafka-010x)
-4. [Getting Started with Kafka 0.9.x](#getting-started-with-kafka-09x)
-5. [Getting Started with Kafka 0.8.x (no longer supported)](#getting-started-with-kafka-08x)
-6. [Usage](#usage)
-7. [How can I contribute to Monix-Kafka?](#how-can-i-contribute-to-monix-kafka?)
-8. [Maintainers](#maintainers)
-9. [License](#license)
+1. [Getting Started with Kafka 4.0.x or above](#getting-started-with-kafka-40x-or-above)
+2. [Getting Started with Kafka 1.0.x or above](#getting-started-with-kafka-10x-or-above)
+3. [Getting Started with Kafka 0.11.x](#getting-started-with-kafka-011x)
+4. [Getting Started with Kafka 0.10.x](#getting-started-with-kafka-010x)
+5. [Getting Started with Kafka 0.9.x](#getting-started-with-kafka-09x)
+6. [Getting Started with Kafka 0.8.x (no longer supported)](#getting-started-with-kafka-08x)
+7. [Usage](#usage)
+8. [How can I contribute to Monix-Kafka?](#how-can-i-contribute-to-monix-kafka?)
+9. [Maintainers](#maintainers)
+10. [License](#license)
+
+## Getting Started with Kafka 4.0.x or above
+
+In sbt:
+
+```scala
+libraryDependencies += "nl.gn0s1s" %% "monix-kafka-4x" % "<tbd>"
+```
+
+Also add a dependency override:
+
+```scala
+dependencyOverrides += "org.apache.kafka" % "kafka-clients" % "4.0.0"
+```
 
 ## Getting Started with Kafka 1.0.x or above
 
