@@ -149,62 +149,19 @@ lazy val commonDependencies = Seq(
     "org.scalacheck" %% "scalacheck" % "1.15.2" % "test")
 )
 
-ThisBuild / scalaVersion := "2.13.8"
-ThisBuild / crossScalaVersions := List("2.12.15", "2.13.8")
+ThisBuild / scalaVersion := "2.13.15"
 
 lazy val monixKafka = project.in(file("."))
   .settings(sharedSettings)
   .settings(doNotPublishArtifact)
-  .aggregate(kafka1x, kafka11, kafka10)
+  .aggregate(kafka4x)
 
-lazy val kafka1x = project.in(file("kafka-1.0.x"))
+lazy val kafka4x = project.in(file("kafka-4.0.x"))
   .settings(commonDependencies)
-  .settings(mimaSettings("monix-kafka-1x"))
+  .settings(mimaSettings("monix-kafka-4x"))
   .settings(
-    name := "monix-kafka-1x",
-    libraryDependencies ++= {
-      if (!(scalaVersion.value startsWith "2.13")) Seq("net.manub" %% "scalatest-embedded-kafka" % "1.1.1" % "test" exclude ("log4j", "log4j"))
-      else Seq.empty[ModuleID]
-    },
-    libraryDependencies += "org.apache.kafka" %  "kafka-clients" % "1.0.2" exclude("org.slf4j","slf4j-log4j12") exclude("log4j", "log4j")
+    name := "monix-kafka-4x",
+    libraryDependencies += "org.apache.kafka" %  "kafka-clients" % "4.0.0" exclude("org.slf4j","slf4j-log4j12") exclude("log4j", "log4j")
   )
-
-lazy val kafka11 = project.in(file("kafka-0.11.x"))
-  .settings(commonDependencies)
-  .settings(mimaSettings("monix-kafka-11"))
-  .settings(
-    name := "monix-kafka-11",
-    libraryDependencies ++= {
-      if (!(scalaVersion.value startsWith "2.13")) Seq("net.manub" %% "scalatest-embedded-kafka" % "1.1.1" % "test" exclude ("log4j", "log4j"))
-      else Seq.empty[ModuleID]
-    },
-    libraryDependencies += "org.apache.kafka" %  "kafka-clients" % "0.11.0.3" exclude("org.slf4j","slf4j-log4j12") exclude("log4j", "log4j")
-  )
-
-lazy val kafka10 = project.in(file("kafka-0.10.x"))
-  .settings(commonDependencies)
-  .settings(mimaSettings("monix-kafka-10"))
-  .settings(
-    name := "monix-kafka-10",
-    libraryDependencies ++= {
-      if (!(scalaVersion.value startsWith "2.13")) Seq("net.manub" %% "scalatest-embedded-kafka" % "0.16.0" % "test" exclude ("log4j", "log4j"))
-      else Seq.empty[ModuleID]
-    },
-    libraryDependencies += "org.apache.kafka" % "kafka-clients" % "0.10.2.2" exclude("org.slf4j","slf4j-log4j12") exclude("log4j", "log4j")
-  )
-
-lazy val benchmarks = project.in(file("benchmarks"))
-  .settings(sharedSettings)
-  .settings(commonDependencies)
-  .settings(
-    scalacOptions += "-Ypartial-unification",
-    name := "benchmarks",
-    organization := "io.monix",
-    scalaVersion := "2.12.15",
-    libraryDependencies ++= Seq("org.scala-lang.modules" %% "scala-collection-compat" % "2.3.2")
-  )
-  .enablePlugins(JmhPlugin)
-  .aggregate(kafka1x)
-  .dependsOn(kafka1x)
 
 scalacOptions += "-Ypartial-unification"
