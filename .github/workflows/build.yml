@@ -1,102 +1,22 @@
 name: build
-
-on: [push, pull_request]
-
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
 jobs:
-
-  compile:
-    name: scala-${{ matrix.scala }} jdk-${{ matrix.java }} tests
+  build:
     runs-on: ubuntu-latest
-
     strategy:
-      fail-fast: true
       matrix:
-        java: [ 8 ]
-        scala: [ 2.12.15, 2.13.8 ]
-
+        scala-version: [2.12.15]
+        java-version: [8]
     steps:
-      - uses: actions/checkout@v2
-      - uses: olafurpg/setup-scala@v13
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
         with:
-          java-version: "adopt@1.${{ matrix.java }}"
-
-      - name: Cache SBT Coursier directory
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/coursier/v1
-          key: ${{ runner.os }}-coursier-${{ hashFiles('**/*.sbt') }}
-          restore-keys: |
-            ${{ runner.os }}-coursier-
-      - name: Cache SBT directory
-        uses: actions/cache@v2
-        with:
-          path: ~/.sbt
-          key: |
-            ${{ runner.os }}-sbt-${{ hashFiles('project/build.properties') }}-${{ hashFiles('project/plugins.sbt') }}
-          restore-keys: ${{ runner.os }}-sbt-
-
-      - name: Run Compile for Kafka 0.10.x, Java ${{ matrix.java }} and Scala ${{ matrix.scala }}
-        run: sbt -J-Xmx6144m  ";++${{ matrix.scala }} ;clean ;kafka10/compile"
-
-      - name: Run Compile for Kafka 0.11.x, Java ${{ matrix.java }} and Scala ${{ matrix.scala }}
-        run: sbt -J-Xmx6144m ";++${{ matrix.scala }} ;clean ;kafka11/compile"
-
-      - name: Run Compile for Kafka 1.x.x, Java ${{ matrix.java }} and Scala ${{ matrix.scala }}
-        run: sbt -J-Xmx6144m ";++${{ matrix.scala }} ;clean ;kafka1x/compile"
-
-  tests:
-    name: scala-${{ matrix.scala }} jdk-${{ matrix.java }} tests
-    runs-on: ubuntu-latest
-
-    strategy:
-      fail-fast: true
-      matrix:
-        java: [8]
-        scala: [2.12.15]
-
-    steps:
-      - uses: actions/checkout@v2
-      - uses: olafurpg/setup-scala@v13
-        with:
-          java-version: "adopt@1.${{ matrix.java }}"
-
-      - name: Cache SBT Coursier directory
-        uses: actions/cache@v2
-        with:
-          path: ~/.cache/coursier/v1
-          key: ${{ runner.os }}-coursier-${{ hashFiles('**/*.sbt') }}
-          restore-keys: |
-            ${{ runner.os }}-coursier-
-      - name: Cache SBT directory
-        uses: actions/cache@v2
-        with:
-          path: ~/.sbt
-          key: |
-            ${{ runner.os }}-sbt-${{ hashFiles('project/build.properties') }}-${{ hashFiles('project/plugins.sbt') }}
-          restore-keys: ${{ runner.os }}-sbt-
-
-      - name: Run Tests for Kafka 0.10.x, Java ${{ matrix.java }} and Scala ${{ matrix.scala }}
-        run: sbt -J-Xmx6144m  ";++${{ matrix.scala }} ;clean ;kafka10/test"
-
-      - name: Run Tests for Kafka 0.11.x, Java ${{ matrix.java }} and Scala ${{ matrix.scala }}
-        run: sbt -J-Xmx6144m ";++${{ matrix.scala }} ;clean ;kafka11/test"
-
-      - name: Run Tests for Kafka 1.x.x, Java ${{ matrix.java }} and Scala ${{ matrix.scala }}
-        run: sbt -J-Xmx6144m ";++${{ matrix.scala }} ;clean ;kafka1x/test"
-
-  publish:
-    needs: [ compile, tests ]
-    if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v2.3.4
-        with:
-          fetch-depth: 0
-      - uses: olafurpg/setup-scala@v13
-      - name: Publish release ${{ github.ref }}
-        run: sbt ci-release
-        env:
-          PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
-          PGP_SECRET: ${{ secrets.PGP_SECRET }}
-          SONATYPE_PASSWORD: ${{ secrets.SONATYPE_PASSWORD }}
-          SONATYPE_USERNAME: ${{ secrets.SONATYPE_USERNAME }}
+          distribution: temurin
+          java-version: ${{ matrix.java-version }}
+      - uses: sbt/setup-sbt@v1
+      - name: Run tests
+        run: sbt ++${{ matrix.scala-version }} clean test
