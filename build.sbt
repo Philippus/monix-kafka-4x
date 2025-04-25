@@ -135,7 +135,7 @@ lazy val commonDependencies = Seq(
     "io.github.embeddedkafka" %% "embedded-kafka" % "4.0.1" % Test)
 )
 
-ThisBuild / scalaVersion := "2.13.15"
+ThisBuild / scalaVersion := "2.13.16"
 
 lazy val monixKafka = project.in(file("."))
   .settings(sharedSettings)
