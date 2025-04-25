@@ -55,7 +55,6 @@ lazy val sharedSettings = warnUnusedImport ++ Seq(
     // Enables linter options
     "-Xlint:adapted-args", // warn if an argument list is modified to match the receiver
     "-Xlint:nullary-unit", // warn when nullary methods return Unit
-    "-Xlint:nullary-override", // warn when non-nullary `def f()' overrides nullary `def f'
     "-Xlint:infer-any", // warn when a type argument is inferred to be `Any`
     "-Xlint:missing-interpolator", // a string literal appears to be missing an interpolator id
     "-Xlint:doc-detached", // a ScalaDoc comment appears to be detached from its element
