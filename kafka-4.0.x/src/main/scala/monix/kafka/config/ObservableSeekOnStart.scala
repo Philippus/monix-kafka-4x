@@ -23,9 +23,9 @@ import com.typesafe.config.ConfigException.BadValue
   *
   * Available options:
   *
-  *  - [[ObservableSeekOnStart.End]]
-  *  - [[ObservableSeekOnStart.Beginning]]
-  *  - [[ObservableSeekOnStart.NoSeek]]
+  *   - [[ObservableSeekOnStart.End]]
+  *   - [[ObservableSeekOnStart.Beginning]]
+  *   - [[ObservableSeekOnStart.NoSeek]]
   */
 sealed trait ObservableSeekOnStart extends Serializable {
   def id: String
@@ -33,13 +33,13 @@ sealed trait ObservableSeekOnStart extends Serializable {
   def isSeekBeginning: Boolean =
     this match {
       case ObservableSeekOnStart.Beginning => true
-      case _ => false
+      case _                               => false
     }
 
   def isSeekEnd: Boolean =
     this match {
       case ObservableSeekOnStart.End => true
-      case _ => false
+      case _                         => false
     }
 }
 
@@ -48,10 +48,10 @@ object ObservableSeekOnStart {
   @throws(classOf[BadValue])
   def apply(id: String): ObservableSeekOnStart =
     id match {
-      case End.id => End
+      case End.id       => End
       case Beginning.id => Beginning
-      case NoSeek.id => NoSeek
-      case _ =>
+      case NoSeek.id    => NoSeek
+      case _            =>
         throw new BadValue("kafka.monix.observable.seek.onStart", s"Invalid value: $id")
     }
 
@@ -67,8 +67,7 @@ object ObservableSeekOnStart {
     val id = "beginning"
   }
 
-  /** Does not call neither `consumer.seekToEnd()` nor `consumer.seekToBeginning`
-    * when starting consumer.
+  /** Does not call neither `consumer.seekToEnd()` nor `consumer.seekToBeginning` when starting consumer.
     */
   case object NoSeek extends ObservableSeekOnStart {
     val id = "no-seek"

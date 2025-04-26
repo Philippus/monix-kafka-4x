@@ -18,14 +18,13 @@ package monix.kafka.config
 
 import com.typesafe.config.ConfigException.BadValue
 
-/** Specifies the consumer commit type, to use by the
-  * [[monix.kafka.KafkaConsumerObservable KafkaConsumerObservable]]
-  * in case `kafka.enable.auto.commit` is set to `false`.
+/** Specifies the consumer commit type, to use by the [[monix.kafka.KafkaConsumerObservable KafkaConsumerObservable]] in
+  * case `kafka.enable.auto.commit` is set to `false`.
   *
   * Available options:
   *
-  *  - [[ObservableCommitType.Sync]]
-  *  - [[ObservableCommitType.Async]]
+  *   - [[ObservableCommitType.Sync]]
+  *   - [[ObservableCommitType.Async]]
   */
 sealed trait ObservableCommitType extends Serializable {
   def id: String
@@ -36,21 +35,19 @@ object ObservableCommitType {
   @throws(classOf[BadValue])
   def apply(id: String): ObservableCommitType =
     id match {
-      case Sync.id => Sync
+      case Sync.id  => Sync
       case Async.id => Async
-      case _ =>
+      case _        =>
         throw new BadValue("kafka.monix.observable.commit.type", s"Invalid value: $id")
     }
 
-  /** Uses `consumer.commitSync()` after each batch
-    * if `enable.auto.commit` is `false`.
+  /** Uses `consumer.commitSync()` after each batch if `enable.auto.commit` is `false`.
     */
   case object Sync extends ObservableCommitType {
     val id = "sync"
   }
 
-  /** Uses `consumer.commitAsync()` after each batch
-    * if `enable.auto.commit` is `false`.
+  /** Uses `consumer.commitAsync()` after each batch if `enable.auto.commit` is `false`.
     */
   case object Async extends ObservableCommitType {
     val id = "async"

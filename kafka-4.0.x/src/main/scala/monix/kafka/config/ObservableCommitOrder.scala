@@ -18,17 +18,14 @@ package monix.kafka.config
 
 import com.typesafe.config.ConfigException.BadValue
 
-/** Specifies the consumer commit order, to use by the
-  * [[monix.kafka.KafkaConsumerObservable KafkaConsumerObservable]]
+/** Specifies the consumer commit order, to use by the [[monix.kafka.KafkaConsumerObservable KafkaConsumerObservable]]
   * in case `kafka.enable.auto.commit` is set to `false`.
   *
   * Available options:
   *
-  *  - [[ObservableCommitOrder.BeforeAck]] specifies to do a commit
-  *    before acknowledgement is received from downstream
-  *  - [[ObservableCommitOrder.AfterAck]] specifies to do a commit
-  *    after acknowledgement is received from downstream
-  *  - [[ObservableCommitOrder.NoAck]] specifies to skip committing
+  *   - [[ObservableCommitOrder.BeforeAck]] specifies to do a commit before acknowledgement is received from downstream
+  *   - [[ObservableCommitOrder.AfterAck]] specifies to do a commit after acknowledgement is received from downstream
+  *   - [[ObservableCommitOrder.NoAck]] specifies to skip committing
   */
 sealed trait ObservableCommitOrder extends Serializable {
   def id: String
@@ -36,13 +33,13 @@ sealed trait ObservableCommitOrder extends Serializable {
   def isBefore: Boolean =
     this match {
       case ObservableCommitOrder.BeforeAck => true
-      case _ => false
+      case _                               => false
     }
 
   def isAfter: Boolean =
     this match {
       case ObservableCommitOrder.AfterAck => true
-      case _ => false
+      case _                              => false
     }
 }
 
@@ -52,21 +49,19 @@ object ObservableCommitOrder {
   def apply(id: String): ObservableCommitOrder =
     id match {
       case BeforeAck.id => BeforeAck
-      case AfterAck.id => AfterAck
-      case NoAck.id => NoAck
-      case _ =>
+      case AfterAck.id  => AfterAck
+      case NoAck.id     => NoAck
+      case _            =>
         throw new BadValue("kafka.monix.observable.commit.order", s"Invalid value: $id")
     }
 
-  /** Do a `commit` in the Kafka Consumer before
-    * receiving an acknowledgement from downstream.
+  /** Do a `commit` in the Kafka Consumer before receiving an acknowledgement from downstream.
     */
   case object BeforeAck extends ObservableCommitOrder {
     val id = "before-ack"
   }
 
-  /** Do a `commit` in the Kafka Consumer after
-    * receiving an acknowledgement from downstream.
+  /** Do a `commit` in the Kafka Consumer after receiving an acknowledgement from downstream.
     */
   case object AfterAck extends ObservableCommitOrder {
     val id = "after-ack"

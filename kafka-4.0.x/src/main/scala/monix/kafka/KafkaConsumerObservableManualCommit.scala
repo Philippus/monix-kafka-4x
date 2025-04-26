@@ -31,14 +31,13 @@ import scala.util.control.NonFatal
 import scala.util.{Failure, Success}
 import scala.jdk.CollectionConverters._
 
-/** KafkaConsumerObservable with ability to manual commit offsets
-  * and forcibly disables auto commits in configuration.
+/** KafkaConsumerObservable with ability to manual commit offsets and forcibly disables auto commits in configuration.
   * Such instances emit [[CommittableMessage]] instead of Kafka's ConsumerRecord.
   */
 final class KafkaConsumerObservableManualCommit[K, V] private[kafka] (
-  override protected val config: KafkaConsumerConfig,
-  override protected val consumerT: Task[Consumer[K, V]])
-    extends KafkaConsumerObservable[K, V, CommittableMessage[K, V]] {
+    override protected val config: KafkaConsumerConfig,
+    override protected val consumerT: Task[Consumer[K, V]]
+) extends KafkaConsumerObservable[K, V, CommittableMessage[K, V]] {
 
   // Caching value to save CPU cycles
   private val pollTimeoutMillis = config.fetchMaxWaitTime.toMillis
@@ -55,7 +54,7 @@ final class KafkaConsumerObservableManualCommit[K, V] private[kafka] (
         .async0[Unit] { (s, cb) =>
           val asyncCb = Callback.forked(cb)(s)
           s.execute { () =>
-            val offsets = batch.map { case (k, v) => k -> new OffsetAndMetadata(v) }.asJava
+            val offsets              = batch.map { case (k, v) => k -> new OffsetAndMetadata(v) }.asJava
             val offsetCommitCallback = new OffsetCommitCallback {
               def onComplete(offsets: util.Map[TopicPartition, OffsetAndMetadata], ex: Exception): Unit =
                 if (ex != null && !cb.tryOnError(ex)) { s.reportFailure(ex) }
@@ -75,7 +74,7 @@ final class KafkaConsumerObservableManualCommit[K, V] private[kafka] (
   override protected def ackTask(consumer: Consumer[K, V], out: Subscriber[CommittableMessage[K, V]]): Task[Ack] =
     Task.create { (scheduler, cb) =>
       implicit val s = scheduler
-      val asyncCb = Callback.forked(cb)
+      val asyncCb    = Callback.forked(cb)
       val cancelable = BooleanCancelable()
 
       val commit: Commit = CommitWithConsumer(consumer)
@@ -86,23 +85,26 @@ final class KafkaConsumerObservableManualCommit[K, V] private[kafka] (
           if (cancelable.isCanceled) Stop
           else {
             try consumer.synchronized {
-              val assignment = consumer.assignment()
-              consumer.resume(assignment)
-              val next = blocking(consumer.poll(java.time.Duration.ofMillis(pollTimeoutMillis)))
-              consumer.pause(assignment)
-              val result = next.asScala.map { record =>
-                CommittableMessage(
-                  record,
-                  CommittableOffset(
-                    new TopicPartition(record.topic(), record.partition()),
-                    record.offset() + 1,
-                    commit))
+                val assignment = consumer.assignment()
+                consumer.resume(assignment)
+                val next       = blocking(consumer.poll(java.time.Duration.ofMillis(pollTimeoutMillis)))
+                consumer.pause(assignment)
+                val result     = next.asScala.map { record =>
+                  CommittableMessage(
+                    record,
+                    CommittableOffset(
+                      new TopicPartition(record.topic(), record.partition()),
+                      record.offset() + 1,
+                      commit
+                    )
+                  )
+                }
+                // Feeding the observer happens on the Subscriber's scheduler
+                // if any asynchronous boundaries happen
+                isAcked = false
+                Observer.feed(out, result)(out.scheduler)
               }
-              // Feeding the observer happens on the Subscriber's scheduler
-              // if any asynchronous boundaries happen
-              isAcked = false
-              Observer.feed(out, result)(out.scheduler)
-            } catch {
+            catch {
               case NonFatal(ex) =>
                 Future.failed(ex)
             }

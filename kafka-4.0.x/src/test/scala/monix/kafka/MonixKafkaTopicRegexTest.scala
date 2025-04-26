@@ -29,7 +29,7 @@ import scala.concurrent.Await
 import scala.concurrent.duration._
 
 class MonixKafkaTopicRegexTest extends AnyFunSuite with KafkaTestKit {
-  val topicsRegex = "monix-kafka-tests-.*".r
+  val topicsRegex        = "monix-kafka-tests-.*".r
   val topicMatchingRegex = "monix-kafka-tests-anything"
 
   val producerCfg = KafkaProducerConfig.default.copy(
@@ -47,9 +47,9 @@ class MonixKafkaTopicRegexTest extends AnyFunSuite with KafkaTestKit {
   test("publish one message when subscribed to topics regex") {
     withRunningKafka {
 
-      val producer = KafkaProducer[String, String](producerCfg, io)
+      val producer     = KafkaProducer[String, String](producerCfg, io)
       val consumerTask = KafkaConsumerObservable.createConsumer[String, String](consumerCfg, topicsRegex).executeOn(io)
-      val consumer = Await.result(consumerTask.runToFuture, 60.seconds)
+      val consumer     = Await.result(consumerTask.runToFuture, 60.seconds)
 
       try {
         // Publishing one message
@@ -74,7 +74,7 @@ class MonixKafkaTopicRegexTest extends AnyFunSuite with KafkaTestKit {
         val send = producer.send(topicMatchingRegex, "test-message")
         Await.result(send.runToFuture, 30.seconds)
 
-        val first = consumer.take(1).map(_.value()).firstL
+        val first  = consumer.take(1).map(_.value()).firstL
         val result = Await.result(first.runToFuture, 30.seconds)
         assert(result === "test-message")
       } finally {

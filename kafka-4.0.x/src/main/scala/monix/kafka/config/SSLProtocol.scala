@@ -21,18 +21,17 @@ import javax.net.ssl.SSLContext
 
 import com.typesafe.config.ConfigException.BadValue
 
-/** Represents the available protocols to use for
-  * SSL connections.
+/** Represents the available protocols to use for SSL connections.
   *
   * Available values:
   *
-  *  - [[SSLProtocol.TLSv12]]
-  *  - [[SSLProtocol.TLSv11]]
-  *  - [[SSLProtocol.TLSv1]]
-  *  - [[SSLProtocol.TLS]]
-  *  - [[SSLProtocol.SSLv3]] (prefer only for older JVMs)
-  *  - [[SSLProtocol.SSLv2]] (prefer only for older JVMs, no longer available for Java 8)
-  *  - [[SSLProtocol.SSL]] (prefer only for older JVMs)
+  *   - [[SSLProtocol.TLSv12]]
+  *   - [[SSLProtocol.TLSv11]]
+  *   - [[SSLProtocol.TLSv1]]
+  *   - [[SSLProtocol.TLS]]
+  *   - [[SSLProtocol.SSLv3]] (prefer only for older JVMs)
+  *   - [[SSLProtocol.SSLv2]] (prefer only for older JVMs, no longer available for Java 8)
+  *   - [[SSLProtocol.SSL]] (prefer only for older JVMs)
   */
 sealed trait SSLProtocol extends Serializable {
   def id: String
@@ -52,18 +51,18 @@ object SSLProtocol {
     val algorithm = id match {
       case TLSv12.id => TLSv12
       case TLSv11.id => TLSv11
-      case TLSv1.id => TLSv1
-      case TLS.id => TLS
-      case SSLv3.id => SSLv3
-      case SSLv2.id => SSLv2
-      case SSL.id => SSL
-      case _ =>
+      case TLSv1.id  => TLSv1
+      case TLS.id    => TLS
+      case SSLv3.id  => SSLv3
+      case SSLv2.id  => SSLv2
+      case SSL.id    => SSL
+      case _         =>
         throw new BadValue("kafka.ssl.enabled.protocols", s"Invalid value: $id")
     }
 
     algorithm.getInstance() match {
       case Some(_) => algorithm
-      case None =>
+      case None    =>
         throw new BadValue("kafka.ssl.enabled.protocols", s"Unsupported SSL protocol: $id")
     }
   }
@@ -84,22 +83,19 @@ object SSLProtocol {
     val id = "TLS"
   }
 
-  /** WARNING: deprecated, might not work on recent versions
-    * of the JVM. Prefer TLS.
+  /** WARNING: deprecated, might not work on recent versions of the JVM. Prefer TLS.
     */
   case object SSLv3 extends SSLProtocol {
     val id = "SSLv3"
   }
 
-  /** WARNING: deprecated, might not work on recent versions
-    * of the JVM. Prefer TLS.
+  /** WARNING: deprecated, might not work on recent versions of the JVM. Prefer TLS.
     */
   case object SSLv2 extends SSLProtocol {
     val id = "SSLv2"
   }
 
-  /** WARNING: deprecated, might not work on recent versions
-    * of the JVM. Prefer TLS.
+  /** WARNING: deprecated, might not work on recent versions of the JVM. Prefer TLS.
     */
   case object SSL extends SSLProtocol {
     val id = "SSL"

@@ -14,7 +14,8 @@ import org.apache.kafka.common.TopicPartition
 import org.scalacheck.Gen
 import org.scalatestplus.scalacheck.ScalaCheckDrivenPropertyChecks
 
-class MergeByCommitCallbackTest extends AnyFunSuite with KafkaTestKit with ScalaCheckDrivenPropertyChecks with Matchers {
+class MergeByCommitCallbackTest extends AnyFunSuite with KafkaTestKit with ScalaCheckDrivenPropertyChecks
+    with Matchers {
 
   val commitCallbacks: List[Commit] = List.fill(4)(new Commit {
     override def commitBatchSync(batch: Map[TopicPartition, Long]): Task[Unit] = Task.unit
@@ -25,13 +26,13 @@ class MergeByCommitCallbackTest extends AnyFunSuite with KafkaTestKit with Scala
 
   val committableOffsetsGen: Gen[CommittableOffset] = for {
     partition <- Gen.posNum[Int]
-    offset <- Gen.posNum[Long]
-    commit <- Gen.oneOf(commitCallbacks)
+    offset    <- Gen.posNum[Long]
+    commit    <- Gen.oneOf(commitCallbacks)
   } yield CommittableOffset(new TopicPartition("topic", partition), offset, commit)
 
   test("merge by commit callback works") {
     forAll(Gen.nonEmptyListOf(committableOffsetsGen)) { offsets =>
-      val partitions = offsets.map(_.topicPartition)
+      val partitions                             = offsets.map(_.topicPartition)
       val received: List[CommittableOffsetBatch] = CommittableOffsetBatch.mergeByCommitCallback(offsets)
 
       received.foreach { batch => partitions should contain allElementsOf batch.offsets.keys }
@@ -42,7 +43,7 @@ class MergeByCommitCallbackTest extends AnyFunSuite with KafkaTestKit with Scala
 
   test("merge by commit callback for multiple consumers") {
     withRunningKafka {
-      val count = 10000
+      val count     = 10000
       val topicName = "monix-kafka-merge-by-commit"
 
       val producerCfg = KafkaProducerConfig.default.copy(

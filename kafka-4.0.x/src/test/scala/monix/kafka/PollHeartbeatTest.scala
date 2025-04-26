@@ -33,10 +33,10 @@ class PollHeartbeatTest extends AnyFunSuite with KafkaTestKit with ScalaFutures 
   test("slow downstream with small poll heartbeat and manual async commit keeps the consumer assignment") {
     withRunningKafka {
 
-      val count = 250
-      val topicName = "monix-kafka-manual-commit-tests"
-      val delay = 200.millis
-      val pollHeartbeat = 2.millis
+      val count                   = 250
+      val topicName               = "monix-kafka-manual-commit-tests"
+      val delay                   = 200.millis
+      val pollHeartbeat           = 2.millis
       val fastPollHeartbeatConfig =
         consumerCfg.copy(maxPollInterval = 200.millis, maxPollRecords = 1).withPollHeartBeatRate(pollHeartbeat)
 
@@ -58,7 +58,7 @@ class PollHeartbeatTest extends AnyFunSuite with KafkaTestKit with ScalaFutures 
         .take(count)
         .toListL
 
-      val (committableMessages, _) = Task.parZip2(listT.executeAsync, pushT.executeAsync).runSyncUnsafe(100.seconds)
+      val (committableMessages, _)                              = Task.parZip2(listT.executeAsync, pushT.executeAsync).runSyncUnsafe(100.seconds)
       val CommittableMessage(lastRecord, lastCommittableOffset) = committableMessages.last
       assert(pollHeartbeat * 10 < delay)
       assert((1 to count).sum === committableMessages.map(_.record.value().toInt).sum)
@@ -102,12 +102,12 @@ class PollHeartbeatTest extends AnyFunSuite with KafkaTestKit with ScalaFutures 
 
   test("slow committable downstream with small poll heartbeat does not cause rebalancing") {
     withRunningKafka {
-      val totalRecords = 1000
-      val topicName = "monix-kafka-manual-commit-tests"
-      val downstreamLatency = 40.millis
-      val pollHeartbeat = 1.millis
-      val maxPollInterval = 10.millis
-      val maxPollRecords = 1
+      val totalRecords            = 1000
+      val topicName               = "monix-kafka-manual-commit-tests"
+      val downstreamLatency       = 40.millis
+      val pollHeartbeat           = 1.millis
+      val maxPollInterval         = 10.millis
+      val maxPollRecords          = 1
       val fastPollHeartbeatConfig =
         consumerCfg
           .copy(maxPollInterval = 200.millis, maxPollRecords = maxPollRecords)
@@ -133,7 +133,7 @@ class PollHeartbeatTest extends AnyFunSuite with KafkaTestKit with ScalaFutures 
         .take(totalRecords)
         .toListL
 
-      val (committableMessages, _) =
+      val (committableMessages, _)                              =
         Task.parZip2(listT.executeAsync, pushT.delayExecution(100.millis).executeAsync).runSyncUnsafe()
       val CommittableMessage(lastRecord, lastCommittableOffset) = committableMessages.last
       assert(pollHeartbeat * 10 < downstreamLatency)
@@ -146,14 +146,14 @@ class PollHeartbeatTest extends AnyFunSuite with KafkaTestKit with ScalaFutures 
     }
   }
 
-  //unhappy scenario
+  // unhappy scenario
   test("slow committable downstream with small `maxPollInterval` and high `pollHeartBeat` causes consumer rebalance") {
     withRunningKafka {
-      val totalRecords = 200
-      val topicName = "monix-kafka-manual-commit-tests"
-      val downstreamLatency = 2.seconds
-      val pollHeartbeat = 15.seconds
-      val maxPollInterval = 100.millis
+      val totalRecords            = 200
+      val topicName               = "monix-kafka-manual-commit-tests"
+      val downstreamLatency       = 2.seconds
+      val pollHeartbeat           = 15.seconds
+      val maxPollInterval         = 100.millis
       val fastPollHeartbeatConfig =
         consumerCfg.copy(maxPollInterval = maxPollInterval, maxPollRecords = 1).withPollHeartBeatRate(pollHeartbeat)
 
@@ -191,11 +191,11 @@ class PollHeartbeatTest extends AnyFunSuite with KafkaTestKit with ScalaFutures 
 
   test("super slow committable downstream causes consumer rebalance") {
     withRunningKafka {
-      val totalRecords = 3
-      val topicName = "monix-kafka-manual-commit-tests"
-      val downstreamLatency = 55.seconds
-      val pollHeartbeat = 5.seconds
-      val maxPollInterval = 4.seconds
+      val totalRecords            = 3
+      val topicName               = "monix-kafka-manual-commit-tests"
+      val downstreamLatency       = 55.seconds
+      val pollHeartbeat           = 5.seconds
+      val maxPollInterval         = 4.seconds
       // the downstreamLatency is higher than the `maxPollInterval`
       // but smaller than `pollHeartBeat`, kafka will trigger rebalance
       // and the consumer will be kicked out of the consumer group.
