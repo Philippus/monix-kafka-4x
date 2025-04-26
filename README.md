@@ -1,6 +1,7 @@
 # Monix-Kafka
 
 [![build](https://github.com/Philippus/monix-kafka-4x/workflows/build/badge.svg)](https://github.com/Philippus/monix-kafka-4x/actions/workflows/build.yml?query=workflow%3Abuild+branch%3Amain)
+![Current Version](https://img.shields.io/badge/version-0.0.1-brightgreen.svg?style=flat "0.0.1")
 [![Scala Steward badge](https://img.shields.io/badge/Scala_Steward-helping-blue.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAMAAAARSr4IAAAAVFBMVEUAAACHjojlOy5NWlrKzcYRKjGFjIbp293YycuLa3pYY2LSqql4f3pCUFTgSjNodYRmcXUsPD/NTTbjRS+2jomhgnzNc223cGvZS0HaSD0XLjbaSjElhIr+AAAAAXRSTlMAQObYZgAAAHlJREFUCNdNyosOwyAIhWHAQS1Vt7a77/3fcxxdmv0xwmckutAR1nkm4ggbyEcg/wWmlGLDAA3oL50xi6fk5ffZ3E2E3QfZDCcCN2YtbEWZt+Drc6u6rlqv7Uk0LdKqqr5rk2UCRXOk0vmQKGfc94nOJyQjouF9H/wCc9gECEYfONoAAAAASUVORK5CYII=)](https://scala-steward.org)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat "Apache 2.0")](LICENSE)
 
@@ -25,7 +26,7 @@ Only here to help in transitioning away from monix-kafka while not blocking migr
 In sbt:
 
 ```scala
-libraryDependencies += "nl.gn0s1s" %% "monix-kafka-4x" % "<tbd>"
+libraryDependencies += "nl.gn0s1s" %% "monix-kafka-4x" % "0.0.1"
 ```
 
 Also add a dependency override:
