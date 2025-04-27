@@ -5,9 +5,8 @@
 [![Scala Steward badge](https://img.shields.io/badge/Scala_Steward-helping-blue.svg?style=flat&logo=data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAA4AAAAQCAMAAAARSr4IAAAAVFBMVEUAAACHjojlOy5NWlrKzcYRKjGFjIbp293YycuLa3pYY2LSqql4f3pCUFTgSjNodYRmcXUsPD/NTTbjRS+2jomhgnzNc223cGvZS0HaSD0XLjbaSjElhIr+AAAAAXRSTlMAQObYZgAAAHlJREFUCNdNyosOwyAIhWHAQS1Vt7a77/3fcxxdmv0xwmckutAR1nkm4ggbyEcg/wWmlGLDAA3oL50xi6fk5ffZ3E2E3QfZDCcCN2YtbEWZt+Drc6u6rlqv7Uk0LdKqqr5rk2UCRXOk0vmQKGfc94nOJyQjouF9H/wCc9gECEYfONoAAAAASUVORK5CYII=)](https://scala-steward.org)
 [![License](https://img.shields.io/badge/license-Apache%202.0-blue.svg?style=flat "Apache 2.0")](LICENSE)
 
-Monix integration with Kafka for kafka-clients 4.0.0 and up
-
-Only here to help in transitioning away from monix-kafka while not blocking migration to kafka-clients 4.0.0 and up!
+Monix integration with Kafka for kafka-clients 4.0.0 and up. It is a fork of [monix-kafka](https://github.com/monix/monix-kafka)
+providing the same functionality for kafka-clients 4.0.0 and up.
 
 ## Table of Contents
 1. [Getting Started with Kafka 4.0.x or above](#getting-started-with-kafka-40x-or-above)
@@ -17,7 +16,7 @@ Only here to help in transitioning away from monix-kafka while not blocking migr
 5. [Getting Started with Kafka 0.9.x](#getting-started-with-kafka-09x)
 6. [Getting Started with Kafka 0.8.x (no longer supported)](#getting-started-with-kafka-08x)
 7. [Usage](#usage)
-8. [How can I contribute to Monix-Kafka?](#how-can-i-contribute-to-monix-kafka?)
+8. [How can I contribute to Monix-Kafka?](#how-can-i-contribute-to-monix-kafka)
 9. [Maintainers](#maintainers)
 10. [License](#license)
 
