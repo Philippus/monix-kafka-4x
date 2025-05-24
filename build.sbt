@@ -105,12 +105,9 @@ lazy val sharedSettings = warnUnusedImport ++ Seq(
        |limitations under the License."""
       .stripMargin
   )),
-
-  // -- Settings meant for deployment on oss.sonatype.org
-  sonatypeProfileName    := organization.value,
-  isSnapshot             := version.value endsWith "SNAPSHOT",
-  Test / publishArtifact := false,
-  pomIncludeRepository   := { _ => false } // removes optional dependencies
+  isSnapshot                := version.value endsWith "SNAPSHOT",
+  Test / publishArtifact    := false,
+  pomIncludeRepository      := { _ => false } // removes optional dependencies
 )
 
 def mimaSettings(projectName: String) = Seq(
