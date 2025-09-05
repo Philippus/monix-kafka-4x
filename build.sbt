@@ -128,7 +128,7 @@ lazy val commonDependencies = Seq(
     "org.scalatest"              %% "scalatest"        % "3.2.19"   % Test,
     "org.scalatestplus"          %% "scalacheck-1-18"  % "3.2.19.0" % Test,
     "org.scalacheck"             %% "scalacheck"       % "1.18.1"   % Test,
-    "io.github.embeddedkafka"    %% "embedded-kafka"   % "4.0.1.1"  % Test
+    "io.github.embeddedkafka"    %% "embedded-kafka"   % "4.1.0"  % Test
   )
 )
 
@@ -144,7 +144,7 @@ lazy val kafka4x = project.in(file("kafka-4.0.x"))
   .settings(mimaSettings("monix-kafka-4x"))
   .settings(
     name                                     := "monix-kafka-4x",
-    libraryDependencies += "org.apache.kafka" % "kafka-clients" % "4.0.0" exclude (
+    libraryDependencies += "org.apache.kafka" % "kafka-clients" % "4.1.0" exclude (
       "org.slf4j",
       "slf4j-log4j12"
     ) exclude ("log4j", "log4j")
