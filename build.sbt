@@ -144,7 +144,7 @@ lazy val kafka4x = project.in(file("kafka-4.0.x"))
   .settings(mimaSettings("monix-kafka-4x"))
   .settings(
     name                                     := "monix-kafka-4x",
-    libraryDependencies += "org.apache.kafka" % "kafka-clients" % "4.1.1" exclude (
+    libraryDependencies += "org.apache.kafka" % "kafka-clients" % "4.2.0" exclude (
       "org.slf4j",
       "slf4j-log4j12"
     ) exclude ("log4j", "log4j")
