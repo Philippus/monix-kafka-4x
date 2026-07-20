@@ -116,7 +116,8 @@ object KafkaProducer {
                     if (isActive.getAndSet(false)) {
                       connection.pop()
                       if (exception != null)
-                        asyncCb.onError(exception)
+                        if (isCanceled.get()) asyncCb.onSuccess(None)
+                        else asyncCb.onError(exception)
                       else
                         asyncCb.onSuccess(Option(meta))
                     } else if (exception != null) {
