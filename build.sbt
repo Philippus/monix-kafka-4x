@@ -149,5 +149,3 @@ lazy val kafka4x = project.in(file("kafka-4.0.x"))
       "slf4j-log4j12"
     ) exclude ("log4j", "log4j")
   )
-
-scalacOptions += "-Ypartial-unification"
