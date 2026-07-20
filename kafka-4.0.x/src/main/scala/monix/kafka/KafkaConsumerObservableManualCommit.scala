@@ -101,7 +101,6 @@ final class KafkaConsumerObservableManualCommit[K, V] private[kafka] (
                 }
                 // Feeding the observer happens on the Subscriber's scheduler
                 // if any asynchronous boundaries happen
-                isAcked = false
                 Observer.feed(out, result)(out.scheduler)
               }
             catch {
@@ -113,7 +112,6 @@ final class KafkaConsumerObservableManualCommit[K, V] private[kafka] (
 
         ackFuture.syncOnComplete {
           case Success(ack) =>
-            isAcked = true
             // The `streamError` flag protects against contract violations
             // (i.e. onSuccess/onError should happen only once).
             // Not really required, but we don't want to depend on the
@@ -136,7 +134,6 @@ final class KafkaConsumerObservableManualCommit[K, V] private[kafka] (
             }
 
           case Failure(ex) =>
-            isAcked = true
             asyncCb.onError(ex)
         }
       }

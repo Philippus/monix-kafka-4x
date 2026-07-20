@@ -77,7 +77,6 @@ final class KafkaConsumerObservableAutoCommit[K, V] private[kafka] (
                 if (shouldCommitBefore) consumerCommit(consumer)
                 // Feeding the observer happens on the Subscriber's scheduler
                 // if any asynchronous boundaries happen
-                isAcked = false
                 Observer.feed(out, next.asScala)(out.scheduler)
               }
             }
@@ -88,7 +87,6 @@ final class KafkaConsumerObservableAutoCommit[K, V] private[kafka] (
 
         ackFuture.syncOnComplete {
           case Success(ack) =>
-            isAcked = true
             // The `streamError` flag protects against contract violations
             // (i.e. onSuccess/onError should happen only once).
             // Not really required, but we don't want to depend on the
@@ -113,7 +111,6 @@ final class KafkaConsumerObservableAutoCommit[K, V] private[kafka] (
             }
 
           case Failure(ex) =>
-            isAcked = true
             asyncCb.onError(ex)
         }
       }
