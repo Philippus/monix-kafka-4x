@@ -39,8 +39,6 @@ trait KafkaConsumerObservable[K, V, Out] extends Observable[Out] {
   protected def config: KafkaConsumerConfig
   protected def consumerT: Task[Consumer[K, V]]
 
-  @volatile
-  protected var isAcked = true
 
   /** Creates a task that polls the source, then feeds the downstream subscriber, returning the resulting
     * acknowledgement
@@ -100,7 +98,6 @@ trait KafkaConsumerObservable[K, V, Out] extends Observable[Out] {
   private def pollHeartbeat(consumer: Consumer[K, V])(implicit scheduler: Scheduler): Task[Unit] = {
     Task.sleep(config.pollHeartbeatRate) >>
       Task.eval {
-        if (!isAcked) {
           consumer.synchronized {
             // needed in order to ensure that the consumer assignment
             // is paused, meaning that no messages will get lost.
@@ -112,7 +109,6 @@ trait KafkaConsumerObservable[K, V, Out] extends Observable[Out] {
               throw new IllegalStateException(errorMsg)
             }
           }
-        }
       }.onErrorHandleWith { ex =>
         Task.now(scheduler.reportFailure(ex)) >>
           Task.sleep(1.seconds)
