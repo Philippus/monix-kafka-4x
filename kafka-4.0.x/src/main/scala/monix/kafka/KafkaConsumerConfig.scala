@@ -19,7 +19,6 @@ package monix.kafka
 import java.io.File
 import java.util.Properties
 import com.typesafe.config.{Config, ConfigFactory}
-import monix.execution.internal.InternalApi
 import monix.kafka.config._
 
 import scala.jdk.CollectionConverters._
@@ -283,7 +282,6 @@ case class KafkaConsumerConfig(
 
   private[kafka] var pollHeartbeatRate: FiniteDuration = 15.millis
 
-  @InternalApi
   private[kafka] def withPollHeartBeatRate(interval: FiniteDuration): KafkaConsumerConfig = {
     pollHeartbeatRate = interval
     this
