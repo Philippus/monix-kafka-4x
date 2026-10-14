@@ -128,7 +128,7 @@ lazy val commonDependencies = Seq(
     "org.scalatest"              %% "scalatest"        % "3.2.20"   % Test,
     "org.scalatestplus"          %% "scalacheck-1-19"  % "3.2.20.0" % Test,
     "org.scalacheck"             %% "scalacheck"       % "1.20.0"   % Test,
-    "io.github.embeddedkafka"    %% "embedded-kafka"   % "4.3.1"    % Test
+    "io.github.embeddedkafka"    %% "embedded-kafka"   % "4.4.0"    % Test
   )
 )
 
