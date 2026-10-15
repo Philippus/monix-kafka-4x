@@ -1,19 +1,19 @@
 inThisBuild(List(
   organization := "nl.gn0s1s",
-  homepage     := Some(url("https://github.com/philippus/monix-kafka-4x")),
-  licenses     := List("APL2" -> url("http://www.apache.org/licenses/LICENSE-2.0.txt")),
+  homepage     := Some(uri("https://github.com/philippus/monix-kafka-4x")),
+  licenses     := List("APL2" -> uri("http://www.apache.org/licenses/LICENSE-2.0.txt")),
   developers   := List(
     Developer(
       id = "alexelcu",
       name = "Alexandru Nedelcu",
       email = "noreply@alexn.org",
-      url = url("https://alexn.org")
+      url = uri("https://alexn.org")
     ),
     Developer(
       id = "pgawrys",
       name = "Piotr Gawryś",
       email = "pgawrys2@gmail.com",
-      url = url("https://github.com/Avasil")
+      url = uri("https://github.com/Avasil")
     )
   )
 ))
@@ -105,7 +105,7 @@ lazy val sharedSettings = warnUnusedImport ++ Seq(
        |limitations under the License."""
       .stripMargin
   )),
-  isSnapshot                := version.value endsWith "SNAPSHOT",
+  isSnapshot                := version.value.endsWith("SNAPSHOT"),
   Test / publishArtifact    := false,
   pomIncludeRepository      := { _ => false } // removes optional dependencies
 )
@@ -117,7 +117,7 @@ def mimaSettings(projectName: String) = Seq(
 lazy val commonDependencies = Seq(
   resolvers ++= Seq(
     "Typesafe Releases" at "https://repo.typesafe.com/typesafe/releases"
-  ) ++ Resolver.sonatypeOssRepos("releases"),
+  ),
   libraryDependencies ++= Seq(
     "io.monix"                   %% "monix-reactive"   % monixVersion,
     "com.typesafe.scala-logging" %% "scala-logging"    % "3.9.6",
@@ -143,9 +143,7 @@ lazy val kafka4x = project.in(file("kafka-4.0.x"))
   .settings(commonDependencies)
   .settings(mimaSettings("monix-kafka-4x"))
   .settings(
-    name                                     := "monix-kafka-4x",
-    libraryDependencies += "org.apache.kafka" % "kafka-clients" % "4.4.0" exclude (
-      "org.slf4j",
-      "slf4j-log4j12"
-    ) exclude ("log4j", "log4j")
+    name                                      := "monix-kafka-4x",
+    libraryDependencies += ("org.apache.kafka" % "kafka-clients" % "4.4.0")
+      .exclude("org.slf4j", "slf4j-log4j12").exclude("log4j", "log4j")
   )
