@@ -132,7 +132,7 @@ lazy val commonDependencies = Seq(
   )
 )
 
-ThisBuild / scalaVersion := "2.13.18"
+ThisBuild / scalaVersion := "3.10.0"
 
 lazy val monixKafka = project.in(file("."))
   .settings(sharedSettings)
